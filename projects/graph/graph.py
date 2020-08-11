@@ -86,25 +86,76 @@ class Graph:
         self.dft_recursive_helper(starting_vertex, visited)
 
     def bfs(self, starting_vertex, destination_vertex):
-        pass
+        # A queue of paths from the starting vertex in BFS order
+        queue = Queue()
 
+        # Enqueue a path starting with the starting index
+        queue.enqueue([starting_vertex])
+        visited = set()
+
+        while queue.size() > 0:
+            # Grab the first path and the last vertex in that path
+            curr_path = queue.dequeue()
+            curr = curr_path[-1]
+
+            # Check to see if this vertex has been visited
+            if curr not in visited:
+                # Check to see if this vertex matches our destination vertex
+                if curr == destination_vertex: return curr_path
+                visited.add(curr)
+            
+            for neighbor in self.get_neighbors(curr):
+                # Add the current vertex's neighbors to the current path
+                next_path = curr_path[:]
+                next_path.append(neighbor)
+
+                # Check to see if the neighbor matches our destination vertex
+                if neighbor == destination_vertex:
+                    return next_path
+                else:
+                    queue.enqueue(next_path)
+
+    # Same alogrithm as bfs but with a queue
     def dfs(self, starting_vertex, destination_vertex):
-        """
-        Return a list containing a path from
-        starting_vertex to destination_vertex in
-        depth-first order.
-        """
-        pass  # TODO
+        stack = Stack()
+        stack.push([starting_vertex])
+
+        visited = set()
+
+        while stack.size() > 0:
+            curr_path = stack.pop()
+            curr = curr_path[-1]
+
+            if curr not in visited:
+                visited.add(curr)
+
+            for neighbor in self.get_neighbors(curr):
+                next_path = curr_path[:]
+                next_path.append(neighbor)
+
+                if neighbor == destination_vertex:
+                    return next_path
+                else:
+                    stack.push(next_path)
+
+    def dfs_recursive_helper(self, curr, destination, visited):
+        if curr == destination:
+            return [curr]
+        
+        for neighbor in self.get_neighbors(curr):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                path = self.dfs_recursive_helper(neighbor, destination, visited)
+
+                if path is not None:
+                    path.insert(0, curr)
+                    return path
+        
 
     def dfs_recursive(self, starting_vertex, destination_vertex):
-        """
-        Return a list containing a path from
-        starting_vertex to destination_vertex in
-        depth-first order.
-
-        This should be done using recursion.
-        """
-        pass  # TODO
+        visited = set()
+        visited.add(starting_vertex)
+        return self.dfs_recursive_helper(starting_vertex, destination_vertex, visited)
 
 if __name__ == '__main__':
     graph = Graph()  # Instantiate your graph
